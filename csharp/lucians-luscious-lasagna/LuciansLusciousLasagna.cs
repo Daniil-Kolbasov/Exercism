@@ -2,24 +2,12 @@ class Lasagna
 {
     private const int expMin = 40;
     private const int oneLayer = 2;
-    
-    // TODO: define the 'ExpectedMinutesInOven()' method
-    public int ExpectedMinutesInOven(){
-        return expMin;
-    }
 
-    // TODO: define the 'RemainingMinutesInOven()' method
-    public int RemainingMinutesInOven(int min){
-        return expMin - min;
-    }
+    public int ExpectedMinutesInOven() => expMin;
 
-    // TODO: define the 'PreparationTimeInMinutes()' method
-    public int PreparationTimeInMinutes(int layers){
-        return oneLayer * layers;
-    }
+    public int RemainingMinutesInOven(int min) => expMin - min;
 
-    // TODO: define the 'ElapsedTimeInMinutes()' method
-    public int ElapsedTimeInMinutes(int layers, int min){
-        return min + oneLayer * layers;
-    }
+    public int PreparationTimeInMinutes(int layers) => oneLayer * layers;
+
+    public int ElapsedTimeInMinutes(int layers, int min) => min + oneLayer * layers;
 }
