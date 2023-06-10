@@ -2,57 +2,47 @@ using System;
 
 class RemoteControlCar
 {
-    private int _speed;
-    private int _battaryDrain;
-    private int _battary;
-    private int _distance;
-        
-    public RemoteControlCar(int speed, int battaryDrain)
-    {
-        _speed = speed;
-        _battaryDrain = battaryDrain;
-        _battary = 100;
-        _distance = 0;
-    }
+	private int _speed;
+	private int _battaryDrain;
+	private int _battary;
+	private int _distance;
 
-    public bool BatteryDrained()
-    {
-        if (_battary >= _battaryDrain)
-            return false;
-        else
-            return true;
-    }
+	public RemoteControlCar(int speed, int battaryDrain)
+	{
+		_speed = speed;
+		_battaryDrain = battaryDrain;
+		_battary = 100;
+		_distance = 0;
+	}
 
-    public int DistanceDriven() => _distance;
+	public bool BatteryDrained() => _battary < _battaryDrain;
 
-    public void Drive()
-    {
-        if (!BatteryDrained())
-        {
-            _battary = _battary - _battaryDrain;
-            _distance += _speed;
-        }
-    }
+	public int DistanceDriven() => _distance;
 
-    public static RemoteControlCar Nitro() => new RemoteControlCar(50, 4);
+	public void Drive()
+	{
+		if (BatteryDrained())
+			return;
+		_battary -= _battaryDrain;
+		_distance += _speed;
+	}
+
+	public static RemoteControlCar Nitro() => new(50, 4);
 }
 
 class RaceTrack
 {
-    private int _distance;
-    
-    public RaceTrack(int distance) => _distance = distance;
+	private readonly int _distance;
 
-    public bool TryFinishTrack(RemoteControlCar car)
-    {
-        while(!car.BatteryDrained())
-        {
-            car.Drive();
-        }
+	public RaceTrack(int distance) => _distance = distance;
 
-        if (car.DistanceDriven() >= _distance)
-            return true;
-        else
-            return false;
-    }
+	public bool TryFinishTrack(RemoteControlCar car)
+	{
+		while (!car.BatteryDrained())
+		{
+			car.Drive();
+		}
+
+		return car.DistanceDriven() >= _distance;
+	}
 }
