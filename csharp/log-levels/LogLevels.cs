@@ -23,6 +23,6 @@ static class LogLine
 		return logLine;
 	}
 
-	private static string message(string logLine) => 
+	private static string message(string logLine) =>
 		logLine.Remove(0, logLevel(logLine).Length + 3).Trim(' ', '\r', '\n', '\t');
 }
