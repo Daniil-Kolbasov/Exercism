@@ -3,11 +3,8 @@ using System;
 abstract class Character
 {
     private string characterType;
-    
-    protected Character(string characterType)
-    {
-        this.characterType = characterType;
-    }
+
+    protected Character(string characterType) => this.characterType = characterType;
 
     public abstract int DamagePoints(Character target);
 
@@ -18,25 +15,16 @@ abstract class Character
 
 class Warrior : Character
 {
-    public Warrior() : base("Warrior")
-    {
-    }
+    public Warrior() : base("Warrior") { }
 
-    public override int DamagePoints(Character target)
-    {
-        if (target.Vulnerable()) return 10;
-        else return 6;
-    }
+    public override int DamagePoints(Character target) => target.Vulnerable() ? 10 : 6;
 }
 
 class Wizard : Character
 {
     private bool prepareSpell;
 
-    public Wizard() : base("Wizard")
-    {
-        prepareSpell = false;
-    }
+    public Wizard() : base("Wizard") => prepareSpell = false;
 
     public override int DamagePoints(Character target)
     {
@@ -45,14 +33,11 @@ class Wizard : Character
             prepareSpell = false;
             return 12;
         }
-        else return 3;
+        else
+            return 3;
     }
 
     public void PrepareSpell() => prepareSpell = true;
 
-    public override bool Vulnerable()
-    {
-        if (!prepareSpell) return true;
-        else return false;
-    }
+    public override bool Vulnerable() => !prepareSpell;
 }
