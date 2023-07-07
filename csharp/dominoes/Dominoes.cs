@@ -3,46 +3,27 @@ using System.Linq;
 
 public static class Dominoes
 {
-    public static bool CanChain(IEnumerable<(int, int)> dominoes)
+    public static bool CanChain(IEnumerable<(int, int)> dominoes) => TryChain(dominoes.ToList(), (0, 0));
+    public static bool TryChain(List<(int, int)> dominoes, (int first, int last) state)
     {
-        if (dominoes == null || !dominoes.Any())
-            return true;
-        if (dominoes.Count() == 1)
-            return dominoes.First().Item1 == dominoes.First().Item2;
-
-        List<(int, int)> dominoesList = dominoes.ToList();
-        var start = dominoesList[0].Item1;
-        var next = dominoesList[0].Item2;
-        dominoesList.Remove(dominoesList[0]);
-
-        return Recursion(dominoesList, start, next);
-    }
-
-    private static bool Recursion(List<(int, int)> dominoes, int start, int prev)
-    {
-        foreach (var d in dominoes)
+        if (dominoes.Count == 0 && state.last == state.first)
+            return true;                        // all dominoes placed and last matches first
+        for (int i = 0; i < dominoes.Count; i++)
         {
-            if (dominoes.Count == 1)
-                return d.Item1 == prev && d.Item2 == start || d.Item1 == start && d.Item2 == prev;
-
-            if (d.Item1 == prev)
-            {
-                var subDominoes = new List<(int, int)>(dominoes);
-                subDominoes.Remove(d);
-
-                if (Recursion(subDominoes, start, d.Item2))
-                    return true;
-            }
-            if (d.Item2 == prev)
-            {
-                var subDominoes = new List<(int, int)>(dominoes);
-                subDominoes.Remove(d);
-
-                if (Recursion(subDominoes, start, d.Item1))
-                    return true;
-            }
+            var (a, b) = dominoes[i];
+            if (state.last == 0)                // first domino of chain
+                state = (a, b);
+            else if (state.last == a)           // domino matches state
+                state.last = b;
+            else if (state.last == b)           // (flipped) domino matches state
+                state.last = a;
+            else                                // this domino doesn't match
+                continue;
+            var dominoesCopy = new List<(int, int)>(dominoes);
+            dominoesCopy.RemoveAt(i);
+            if (TryChain(dominoesCopy, state))  // try to chain next domino to this state
+                return true;
         }
-
         return false;
     }
 }
