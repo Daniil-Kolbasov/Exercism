@@ -1,29 +1,22 @@
 using System.Collections.Generic;
 using System.Linq;
 
-public static class Dominoes
+public static class D1ominoes
 {
-    public static bool CanChain(IEnumerable<(int, int)> dominoes) => TryChain(dominoes.ToList(), (0, 0));
-    public static bool TryChain(List<(int, int)> dominoes, (int first, int last) state)
+    public static bool CanChain(IReadOnlyCollection<(int, int)> dominoes) =>
+        !dominoes.Any() || CanChain(dominoes, dominoes.First());
+
+    private static bool CanChain(IEnumerable<(int, int)> dominoes, (int, int) firstDomino) =>
+        CanChain(dominoes, firstDomino, firstDomino.Item1, firstDomino.Item2);
+
+    private static bool CanChain(IEnumerable<(int, int)> originalDominoList, (int, int) lastDomino, int lastNumber, int goal)
     {
-        if (dominoes.Count == 0 && state.last == state.first)
-            return true;                        // all dominoes placed and last matches first
-        for (int i = 0; i < dominoes.Count; i++)
-        {
-            var (a, b) = dominoes[i];
-            if (state.last == 0)                // first domino of chain
-                state = (a, b);
-            else if (state.last == a)           // domino matches state
-                state.last = b;
-            else if (state.last == b)           // (flipped) domino matches state
-                state.last = a;
-            else                                // this domino doesn't match
-                continue;
-            var dominoesCopy = new List<(int, int)>(dominoes);
-            dominoesCopy.RemoveAt(i);
-            if (TryChain(dominoesCopy, state))  // try to chain next domino to this state
-                return true;
-        }
-        return false;
+        var localDominoList = new List<(int, int)>(originalDominoList);
+        localDominoList.Remove(lastDomino);
+        return !localDominoList.Any()
+            ? lastNumber == goal
+            : localDominoList
+                .Where(x => x.Item1 == lastNumber || x.Item2 == lastNumber)
+                .Any(x => CanChain(localDominoList, x, x.Item1 == lastNumber ? x.Item2 : x.Item1, goal));
     }
 }
