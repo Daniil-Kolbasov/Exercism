@@ -1,22 +1,35 @@
-using System.Collections.Generic;
+using System;
 using System.Linq;
-
-public static class D1ominoes
+using System.Collections.Generic;
+public static class Dominoes
 {
-    public static bool CanChain(IReadOnlyCollection<(int, int)> dominoes) =>
-        !dominoes.Any() || CanChain(dominoes, dominoes.First());
-
-    private static bool CanChain(IEnumerable<(int, int)> dominoes, (int, int) firstDomino) =>
-        CanChain(dominoes, firstDomino, firstDomino.Item1, firstDomino.Item2);
-
-    private static bool CanChain(IEnumerable<(int, int)> originalDominoList, (int, int) lastDomino, int lastNumber, int goal)
+    public static bool CanChain(IEnumerable<(int, int)> dominoes)
     {
-        var localDominoList = new List<(int, int)>(originalDominoList);
-        localDominoList.Remove(lastDomino);
-        return !localDominoList.Any()
-            ? lastNumber == goal
-            : localDominoList
-                .Where(x => x.Item1 == lastNumber || x.Item2 == lastNumber)
-                .Any(x => CanChain(localDominoList, x, x.Item1 == lastNumber ? x.Item2 : x.Item1, goal));
+        return dominoes.Any() ? CanChain(dominoes.ToArray().AsSpan()) : true;
+
+        static bool CanChain(Span<(int DotCount1, int DotCount2)> dominoes)
+        {
+            var firstDominoFace = dominoes[0];
+            if (dominoes.Length == 1)
+            {
+                return firstDominoFace.DotCount1 == firstDominoFace.DotCount2;
+            }
+            for (int i = 1; i < dominoes.Length; ++i)
+            {
+                var currentDominoFace = dominoes[i];
+                if (currentDominoFace.DotCount1 == firstDominoFace.DotCount1)
+                {
+                    dominoes[i].DotCount1 = firstDominoFace.DotCount2;
+                    if (CanChain(dominoes.Slice(start: 1))) return true;
+                }
+                if (currentDominoFace.DotCount1 == firstDominoFace.DotCount2)
+                {
+                    dominoes[i].DotCount1 = firstDominoFace.DotCount1;
+                    if (CanChain(dominoes.Slice(start: 1))) return true;
+                }
+                dominoes[i].DotCount1 = currentDominoFace.DotCount1;
+            }
+            return false;
+        }
     }
 }
